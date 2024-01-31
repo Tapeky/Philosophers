@@ -6,7 +6,7 @@
 /*   By: tsadouk <tsadouk@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/24 14:30:53 by tsadouk           #+#    #+#             */
-/*   Updated: 2024/01/30 16:20:17 by tsadouk          ###   ########.fr       */
+/*   Updated: 2024/01/31 15:07:58 by tsadouk          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,6 +48,7 @@ typedef struct s_philo
 	u_int64_t		last_eat_time;
 }               t_philo;
 
+
 typedef struct s_data
 {
 	int				nb_philos;
@@ -72,5 +73,19 @@ typedef struct s_data
 	t_philo			*philos;
 }t_data;
 
+
+void	*philo_routine(void *arg);
+void	print_philo_action(t_philo *philosopher, const char *action);
+void	change_philo_state(t_philo *philosopher, t_state new_state);
+void	sleep_for(u_int64_t duration);
+void init_all(t_data *data, char **argv);
+void create_philo_threads(t_data *data);
+void	init_philosophers(t_data *data);
+void	init_forks(t_data *data);
+void init_mutex(t_data *data);
+void init_data(t_data *data, char **argv);
+bool	errors_handeler(int argc);
+void print_args(char **argv);
+int	ft_atoi(const char *str);
 
 #endif

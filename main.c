@@ -6,7 +6,7 @@
 /*   By: tsadouk <tsadouk@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/24 14:30:02 by tsadouk           #+#    #+#             */
-/*   Updated: 2024/01/30 16:20:18 by tsadouk          ###   ########.fr       */
+/*   Updated: 2024/01/31 15:07:46 by tsadouk          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,27 +47,7 @@ void print_args(char **argv)
     printf("\033[0;33mnumber of times each philosopher must eat 🍕: %d\033[0m\n", ft_atoi(argv[5])); // Marron pour "number of times each philosopher must eat"
 }
 
-void initialize_philos(t_philo *philo, char **argv, int nb_philo)
-{
-	int i;
-
-	i = 0;
-	while (i < nb_philo)
-	{
-		philo[i].id = i + 1;
-		philo[i].time_to_die = ft_atoi(argv[2]);
-		philo[i].time_to_eat = ft_atoi(argv[3]);
-		philo[i].time_to_sleep = ft_atoi(argv[4]);
-		philo[i].nb_eat = ft_atoi(argv[5]);
-		philo[i].nb_philo = nb_philo;
-		philo[i].nb_fork = nb_philo;
-		philo[i].meals_eaten = 0;
-		i++;
-	}
-}
-
-
-bool	errors_handeler(int argc, char **argv)
+bool	errors_handeler(int argc)
 {
 	if (argc != 5 && argc != 6)
 	{
@@ -77,90 +57,75 @@ bool	errors_handeler(int argc, char **argv)
 	return (0);
 }
 
-void	*philoshopher_thread(void *arg)
-{
-	t_philo *philosopher = (t_philo *)arg;
 
-	while (1)
-	{
-		// Is thinking
-		printf("\033[1;34mPhilosopher %d is thinking\n\033[0m", philosopher->id);
-		sleep(philosopher->time_to_sleep);
-
-		// Take a fork
-		pthread_mutex_lock(&philosopher->mutex[philosopher->id - 1]);
-		printf("\033[1;33mPhilosopher %d has taken a fork\n\033[0m", philosopher->id);
-
-		// Tale the second fork
-		pthread_mutex_lock(&philosopher->mutex[philosopher->id % philosopher->nb_philo]);
-		printf("\033[1;33mPhilosopher %d has taken a fork\n\033[0m", philosopher->id);
-
-		// Is eating
-		printf("\033[1;32mPhilosopher %d is eating\n\033[0m", philosopher->id);
-		philosopher->meals_eaten++;
-		sleep(philosopher->time_to_eat);
-
-		// Put down the forks
-		pthread_mutex_unlock(&philosopher->mutex[philosopher->id - 1]);
-		pthread_mutex_unlock(&philosopher->mutex[philosopher->id % philosopher->nb_philo]);
-
-		// The philosopher has eaten enough ?
-		if (philosopher->meals_eaten == philosopher->nb_eat)
-			break;
-		
-		// Is sleeping
-		printf("\033[1;34mPhilosopher %d is sleeping\n\033[0m", philosopher->id);
-		sleep(philosopher->time_to_sleep);
-
-	}
-
-}
-
-void	create_philos_trhead(t_philo *philo, int nb_philo)
-{
-	int i;
-
-	i = 0;
-	while (i < nb_philo)
-	{
-		pthread_create(&philo[i].thread, NULL, philoshopher_thread, &philo[i]);
-		i++;
-	}
-}
-
-
-void	free_all_philos(t_philo *philosophers, int nb_philo)
+void	init_philosophers(t_data *data)
 {
 	int	i;
 
+	if (!data->philos)
+		return ;
+
 	i = 0;
-	while (i < nb_philo)
+	data->philos = malloc(sizeof(t_philo) * data->nb_philos);
+	while (i < data->nb_philos)
 	{
-		free(&philosophers[i]);
+		data->philos[i].id = i;
+		data->philos[i].meals_eaten = 0;
+		data->philos[i].data = data;
+		data->philos[i].state = IDLE;
+		data->philos[i].left_fork = &data->forks[i];
+		data->philos[i].right_fork = &data->forks[(i + 1) % data->nb_philos];
+		pthread_mutex_init(&data->philos[i].mut_state, NULL);
+		pthread_mutex_init(&data->philos[i].mut_meals_eaten, NULL);
+		pthread_mutex_init(&data->philos[i].mut_last_eat_time, NULL);
+		data->philos[i].last_eat_time = 0;
 		i++;
 	}
-	free(philosophers);
 }
 
-int	main(int argc, char **argv)
+void init_all(t_data *data, char **argv)
 {
-	int		nb_philosophers;
-	t_philo	*philosophers;
+	init_data(data, argv);
+	init_mutex(data);
+	init_forks(data);
+	init_philosophers(data);
+}
 
-	if (errors_handeler(argc, argv))
-		return (0);
-	nb_philosophers = ft_atoi(argv[1]);
-	philosophers = (t_philo *)malloc(sizeof(t_philo) * nb_philosophers);
-	if (!philosophers)
-		return (0);
 
+void create_philo_threads(t_data *data)
+{
+	int	i;
+
+	if (!data->philo_ths)
+		return ;
+
+	i = 0;
+	data->philo_ths = malloc(sizeof(pthread_t) * data->nb_philos);
+	while (i < data->nb_philos)
+	{
+		if (pthread_create(&data->philo_ths[i], NULL, philo_routine, &data->philos[i]))
+			exit(1);
+		i++;
+	}
+}
+
+int main(int argc, char **argv)
+{
+	if (errors_handeler(argc))
+		return (1);
 	print_args(argv);
-	initialize_philos(philosophers, argv, nb_philosophers);
-	create_philos_trhead(philosophers, nb_philosophers);
+	t_data data;
+	init_all(&data, argv);
+	create_philo_threads(&data);
+	int i = 0;
+	while (i < data.nb_philos)
+	{
+		pthread_join(data.philo_ths[i], NULL);
+		i++;
+	}
+	free(data.philo_ths);
+	free(data.philos);
+	free(data.forks);
 
-	for (int i = 0; i < nb_philosophers; i++)
-		pthread_join(philosophers[i].thread, NULL);
-
-	free_all_philos(philosophers, nb_philosophers);
 	return (0);
 }
