@@ -6,7 +6,7 @@
 /*   By: tsadouk <tsadouk@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/24 14:30:53 by tsadouk           #+#    #+#             */
-/*   Updated: 2024/01/31 15:07:58 by tsadouk          ###   ########.fr       */
+/*   Updated: 2024/02/01 13:59:13 by tsadouk          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,6 +86,7 @@ void init_mutex(t_data *data);
 void init_data(t_data *data, char **argv);
 bool	errors_handeler(int argc);
 void print_args(char **argv);
+u_int64_t	get_time_in_ms(void);
 int	ft_atoi(const char *str);
 
 #endif

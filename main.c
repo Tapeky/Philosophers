@@ -6,37 +6,11 @@
 /*   By: tsadouk <tsadouk@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/24 14:30:02 by tsadouk           #+#    #+#             */
-/*   Updated: 2024/01/31 15:07:46 by tsadouk          ###   ########.fr       */
+/*   Updated: 2024/02/01 15:32:47 by tsadouk          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
-
-int	ft_atoi(const char *str)
-{
-	int	i;
-	int	neg;
-	int	nb;
-
-	i = 0;
-	neg = 1;
-	nb = 0;
-	while (str[i] == '\n' || str[i] == '\t' || str[i] == '\r' || str[i] == '\f'
-		|| str[i] == '\v' || str[i] == ' ')
-		i++;
-	if (str[i] == '-')
-		neg = -neg;
-	if (str[i] == '-' || str[i] == '+')
-		i++;
-	if (str[i] < 48 || str[i] > 57)
-		return (0);
-	while (str[i] >= 48 && str[i] <= 57)
-	{
-		nb = (nb * 10) + ((int)str[i] - 48);
-		i++;
-	}
-	return (nb * neg);
-}
 
 void print_args(char **argv)
 {
@@ -49,7 +23,7 @@ void print_args(char **argv)
 
 bool	errors_handeler(int argc)
 {
-	if (argc != 5 && argc != 6)
+	if (argc != 6)
 	{
 		printf("\033[1;31mError: wrong number of arguments\033[0m\n");
 		return (1);
@@ -107,6 +81,16 @@ void create_philo_threads(t_data *data)
 			exit(1);
 		i++;
 	}
+}
+
+u_int64_t	get_time_in_ms(void)
+{
+	struct timeval	tv;
+	u_int64_t		time_in_ms;
+
+	gettimeofday(&tv, NULL);
+	time_in_ms = (u_int64_t)tv.tv_sec * 1000 + (u_int64_t)tv.tv_usec / 1000;
+	return (time_in_ms);
 }
 
 int main(int argc, char **argv)

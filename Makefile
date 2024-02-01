@@ -6,7 +6,7 @@
 #    By: tsadouk <tsadouk@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/01/24 14:31:19 by tsadouk           #+#    #+#              #
-#    Updated: 2024/01/31 15:06:50 by tsadouk          ###   ########.fr        #
+#    Updated: 2024/02/01 14:01:59 by tsadouk          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -14,6 +14,9 @@ NAME = philo
 
 SRCS =	main.c \
 		routine.c \
+		utils.c \
+		init_data.c \
+		
 
 OBJS = $(SRCS:.c=.o)
 

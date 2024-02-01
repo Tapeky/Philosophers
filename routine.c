@@ -6,21 +6,34 @@
 /*   By: tsadouk <tsadouk@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/31 14:52:14 by tsadouk           #+#    #+#             */
-/*   Updated: 2024/01/31 14:53:28 by tsadouk          ###   ########.fr       */
+/*   Updated: 2024/02/01 15:12:35 by tsadouk          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-void	print_philo_action(t_philo *philosopher, const char *action)
+void print_philo_action(t_philo *philosopher, const char *action)
 {
-	pthread_mutex_lock(&philosopher->data->mut_print);
-	printf("%llu %d %s\n",
-		get_time_in_ms() - philosopher->data->start_time,
-		philosopher->id + 1,
-		action);
-	pthread_mutex_unlock(&philosopher->data->mut_print);
+    pthread_mutex_lock(&philosopher->data->mut_print);
+    
+    if (philosopher->state == EATING)
+        printf("\033[1;32mPhilosopher %d %s\033[0m\n", philosopher->id, action);
+    else if (philosopher->state == SLEEPING)
+        printf("\033[1;34mPhilosopher %d %s\033[0m\n", philosopher->id, action);
+    else if (philosopher->state == THINK)
+        printf("\033[1;33mPhilosopher %d %s\033[0m\n", philosopher->id, action);
+    else if (philosopher->state == DEAD)
+        printf("\033[1;31mPhilosopher %d %s\033[0m\n", philosopher->id, action);
+    else if (philosopher->state == FULL)
+        printf("\033[1;35mPhilosopher %d %s\033[0m\n", philosopher->id, action);
+    else if (philosopher->state == IDLE)
+        printf("\033[1;36mPhilosopher %d %s\033[0m\n", philosopher->id, action);
+    else
+        printf("Philosopher %d %s\n", philosopher->id, action);
+
+    pthread_mutex_unlock(&philosopher->data->mut_print);
 }
+
 
 void	change_philo_state(t_philo *philosopher, t_state new_state)
 {
