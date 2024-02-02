@@ -6,7 +6,7 @@
 #    By: tsadouk <tsadouk@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/01/24 14:31:19 by tsadouk           #+#    #+#              #
-#    Updated: 2024/02/01 14:01:59 by tsadouk          ###   ########.fr        #
+#    Updated: 2024/02/02 16:57:44 by tsadouk          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -16,6 +16,8 @@ SRCS =	main.c \
 		routine.c \
 		utils.c \
 		init_data.c \
+		monitoring.c \
+		
 		
 
 OBJS = $(SRCS:.c=.o)

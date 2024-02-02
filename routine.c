@@ -6,7 +6,7 @@
 /*   By: tsadouk <tsadouk@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/31 14:52:14 by tsadouk           #+#    #+#             */
-/*   Updated: 2024/02/01 15:12:35 by tsadouk          ###   ########.fr       */
+/*   Updated: 2024/02/02 16:57:57 by tsadouk          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,6 +94,7 @@ void	*philo_routine(void *arg)
 		if (philosopher->meals_eaten >= data->nb_meals)
 		{
 			change_philo_state(philosopher, FULL);
+			printf("Philosopher %d is full\n", philosopher->id);
 			data->nb_full_p++;
 			pthread_mutex_unlock(&philosopher->mut_meals_eaten);
 			break;
@@ -108,3 +109,5 @@ void	*philo_routine(void *arg)
 
 	return (NULL);
 }
+
+

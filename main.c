@@ -6,7 +6,7 @@
 /*   By: tsadouk <tsadouk@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/24 14:30:02 by tsadouk           #+#    #+#             */
-/*   Updated: 2024/02/01 15:32:47 by tsadouk          ###   ########.fr       */
+/*   Updated: 2024/02/02 17:03:24 by tsadouk          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,6 +83,9 @@ void create_philo_threads(t_data *data)
 	}
 }
 
+
+je veux pour les philos pairs : time_to_die = time_to_eat + time_to_sleep + 10;
+je veux pour les philos impairs : time_to_die = time_to_eat*2 + time_to_sleep + 10;
 u_int64_t	get_time_in_ms(void)
 {
 	struct timeval	tv;
@@ -101,12 +104,14 @@ int main(int argc, char **argv)
 	t_data data;
 	init_all(&data, argv);
 	create_philo_threads(&data);
+	pthread_create(&data.monit_all_alive, NULL, monitor_all_alive, &data);
 	int i = 0;
 	while (i < data.nb_philos)
 	{
 		pthread_join(data.philo_ths[i], NULL);
 		i++;
 	}
+	pthread_join(data.monit_all_alive, NULL);
 	free(data.philo_ths);
 	free(data.philos);
 	free(data.forks);
